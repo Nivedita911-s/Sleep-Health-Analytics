@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sleep Health Analytics</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+    <h1>Sleep Health Analytics</h1>
+    <p>Understand sleep and lifestyle patterns using Python</p>
+</header>
+
+<main>
+    <section class="cards">
+        <div class="card">
+            <h3>Records Analyzed</h3>
+            <p>{{ total }}</p>
+        </div>
+        <div class="card">
+            <h3>Average Sleep</h3>
+            <p>{{ sleep if sleep is not none else "N/A" }}
+               <small>hours</small></p>
+        </div>
+        <div class="card">
+            <h3>Average Stress Level</h3>
+            <p>{{ stress if stress is not none else "N/A" }}</p>
+        </div>
+        <div class="card">
+            <h3>Average Daily Steps</h3>
+            <p>{{ steps if steps is not none else "N/A" }}</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Sleep Disorder Category Summary</h2>
+        {% for category, count in counts.items() %}
+            <p class="summary">
+                <strong>{{ category }}</strong>
+                <span>{{ count }} records</span>
+            </p>
+        {% endfor %}
+        {% if accuracy is not none %}
+            <p>Held-out test accuracy: <strong>{{ accuracy }}%</strong></p>
+        {% endif %}
+        <p class="note">
+            Model performance is dataset-dependent. This is not a medical diagnosis.
+        </p>
+    </section>
+
+    <section class="panel">
+        <h2>Analyze a Sample Record</h2>
+        <p>Enter the available details to see the model's predicted category.</p>
+        <form method="POST">
+            {% for col in features %}
+                <label for="{{ col }}">{{ col }}</label>
+                {% if col in numeric %}
+                    <input type="number" step="any" id="{{ col }}"
+                           name="{{ col }}" required>
+                {% else %}
+                    <input type="text" id="{{ col }}"
+                           name="{{ col }}" required>
+                {% endif %}
+            {% endfor %}
+            <button type="submit">Analyze Record</button>
+        </form>
+
+        {% if prediction %}
+            <div class="result">
+                Predicted dataset category: <strong>{{ prediction }}</strong>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <h2>Sample Dataset Records</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                    {% for col in features %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                        <th>Sleep Disorder</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in rows %}
+                    <tr>
+                    {% for col in features %}
+                        <td>{{ row[col] }}</td>
+                    {% endfor %}
+                        <td>{{ row["SleepDisorder"] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>
+    Educational project | Python, Pandas, Scikit-learn and Flask
+</footer>
+</body>
+</html>
